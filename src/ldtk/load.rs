@@ -19,8 +19,10 @@ pub async fn load_project(path: &str) -> io::Result<LdtkResources> {
 
     let json: LdtkJson = serde_json::from_reader(reader)?;
 
-    let path_base = PathBuf::from(path).join("..");
+    let mut path_base = PathBuf::from(path);
+    path_base.pop();
 
+    // Load tilesets
     let mut tilesets: Vec<LdtkTileset> = Vec::new();
     for json_t in &json.defs.tilesets {
         let tex_path = path_base.join(json_t.rel_path.clone().unwrap());
