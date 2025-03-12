@@ -1,4 +1,4 @@
-use macroquad::{color::Color, texture::Texture2D};
+use macroquad::color::Color;
 
 pub struct LdtkResources {
     pub levels: Vec<LdtkLevel>,
@@ -23,7 +23,8 @@ pub struct LdtkEntityDef {
 }
 
 pub struct LdtkTileset {
-    pub texture: Texture2D,
+    /// Index of the texture in the passed-in array
+    pub texture_index: u32,
 
     pub grid_height: i64,
     pub grid_width: i64,
