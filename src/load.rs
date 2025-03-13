@@ -6,7 +6,7 @@ use std::{
 
 use macroquad::texture::Texture2D;
 
-use crate::ldtk::parser::*;
+use crate::parser::*;
 
 use super::types::{LdtkResources, LdtkTileset};
 
