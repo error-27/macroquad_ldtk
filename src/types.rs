@@ -1,13 +1,42 @@
+use std::collections::HashMap;
+
 use macroquad::color::Color;
 
 pub struct LdtkResources {
     pub levels: Vec<LdtkLevel>,
 
     /// Vec of all tilesets
-    pub tilesets: Vec<LdtkTileset>,
+    pub tilesets: HashMap<String, LdtkTileset>,
+
+    pub layer_defs: HashMap<String, LdtkLayerDef>,
 }
 
-pub struct LdtkLevel {}
+pub struct LdtkLevel {
+    pub layers: Vec<LdtkLayerInstance>,
+}
+
+pub struct LdtkLayerDef {
+    pub layer_type: LdtkLayerType,
+    pub identifier: String,
+    pub opacity: f64,
+    pub grid_size: i64,
+
+    pub uid: i64,
+}
+
+pub struct LdtkLayerInstance {
+    pub grid_height: i64,
+    pub grid_width: i64,
+    pub grid_size: i64,
+
+    /// Identifier used to index through the hashmap of layer definitions
+    pub layerdef_id: String,
+
+    /// Path of tileset, used to index into a hashmap
+    pub tileset_id: String,
+
+    pub grid_tiles: Vec<LdtkTileInstance>,
+}
 
 pub struct LdtkEntityDef {
     pub allow_out_of_bounds: bool,
@@ -37,6 +66,16 @@ pub struct LdtkTileset {
     pub uid: i64,
 }
 
+pub struct LdtkTileInstance {
+    pub alpha: f64,
+
+    pub px_coords: [i64; 2],
+
+    pub src_coords: [i64; 2],
+
+    pub tile_id: i64,
+}
+
 pub struct LdtkTileRect {
     pub x: i64,
     pub y: i64,
@@ -44,4 +83,11 @@ pub struct LdtkTileRect {
     pub height: i64,
 
     pub tileset_uid: i64,
+}
+
+pub enum LdtkLayerType {
+    IntGrid,
+    Entities,
+    Tiles,
+    AutoLayer,
 }

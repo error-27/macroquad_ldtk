@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     fs::File,
     io::{self, BufReader},
     path::PathBuf,
@@ -6,7 +7,10 @@ use std::{
 
 use macroquad::texture::Texture2D;
 
-use crate::parser::*;
+use crate::{
+    parser::*,
+    types::{LdtkLayerDef, LdtkLayerType},
+};
 
 use super::types::{LdtkResources, LdtkTileset};
 
@@ -22,7 +26,7 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     path_base.pop();
 
     // Load tilesets
-    let mut tilesets: Vec<LdtkTileset> = Vec::new();
+    let mut tilesets: HashMap<String, LdtkTileset> = HashMap::new();
     for json_t in &json.defs.tilesets {
         let tex_i = textures
             .iter()
@@ -40,12 +44,35 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
             texture_index: tex_i as u32,
         };
 
-        tilesets.push(tileset);
+        tilesets.insert(textures[tex_i].1.to_owned(), tileset);
+    }
+
+    // Load layer definitions
+    let mut layerdefs: HashMap<String, LdtkLayerDef> = HashMap::new();
+    for json_l in &json.defs.layers {
+        let layer_type = match json_l.layer_definition_type.as_str() {
+            "IntGrid" => LdtkLayerType::IntGrid,
+            "Tiles" => LdtkLayerType::Tiles,
+            "AutoLayer" => LdtkLayerType::AutoLayer,
+            "Entities" => LdtkLayerType::Entities,
+            _ => panic!("Invalid LDtk file loaded!"),
+        };
+
+        let layerdef = LdtkLayerDef {
+            layer_type: layer_type,
+            identifier: json_l.identifier.clone(),
+            opacity: json_l.display_opacity,
+            grid_size: json_l.grid_size,
+            uid: json_l.uid,
+        };
+
+        layerdefs.insert(json_l.identifier.clone(), layerdef);
     }
 
     let resources = LdtkResources {
         levels: Vec::new(),
         tilesets: tilesets,
+        layer_defs: layerdefs,
     };
 
     Ok(resources)
