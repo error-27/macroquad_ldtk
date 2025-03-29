@@ -9,7 +9,7 @@ use macroquad::texture::Texture2D;
 
 use crate::{
     parser::*,
-    types::{LdtkLayerDef, LdtkLayerType},
+    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel},
 };
 
 use super::types::{LdtkResources, LdtkTileset};
@@ -69,8 +69,29 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
         layerdefs.insert(json_l.identifier.clone(), layerdef);
     }
 
+    let mut levels: Vec<LdtkLevel> = Vec::new();
+    for level in &json.levels {
+        let mut layer_insts: Vec<LdtkLayerInstance> = Vec::new();
+
+        for l in level.layer_instances.as_ref().unwrap() {
+            let l_converted = LdtkLayerInstance {
+                grid_height: l.c_hei,
+                grid_width: l.c_wid,
+                grid_size: l.grid_size,
+                layerdef_id: l.identifier.clone(),
+                tileset_id: l.tileset_rel_path.clone().unwrap(),
+                grid_tiles: Vec::new(), // TODO: Replace with an actual value
+            };
+            layer_insts.push(l_converted);
+        }
+
+        levels.push(LdtkLevel {
+            layers: layer_insts,
+        });
+    }
+
     let resources = LdtkResources {
-        levels: Vec::new(),
+        levels: levels,
         tilesets: tilesets,
         layer_defs: layerdefs,
     };

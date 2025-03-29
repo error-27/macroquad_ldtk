@@ -5,7 +5,7 @@ use macroquad::color::Color;
 pub struct LdtkResources {
     pub levels: Vec<LdtkLevel>,
 
-    /// Vec of all tilesets
+    /// Map of all tilesets
     pub tilesets: HashMap<String, LdtkTileset>,
 
     pub layer_defs: HashMap<String, LdtkLayerDef>,
