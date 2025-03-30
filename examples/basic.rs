@@ -15,7 +15,7 @@ async fn main() {
     loop {
         clear_background(BLACK);
 
-        render_level(&ldtk_resources, &tilesets);
+        draw_level(0, &ldtk_resources, &tilesets);
 
         next_frame().await
     }

@@ -9,7 +9,7 @@ use macroquad::texture::Texture2D;
 
 use crate::{
     parser::*,
-    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel},
+    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel, LdtkTileInstance},
 };
 
 use super::types::{LdtkResources, LdtkTileset};
@@ -74,13 +74,18 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
         let mut layer_insts: Vec<LdtkLayerInstance> = Vec::new();
 
         for l in level.layer_instances.as_ref().unwrap() {
+            let tiles: Vec<LdtkTileInstance> = l
+                .grid_tiles
+                .iter()
+                .map(|me| convert::convert_tile_instance(me))
+                .collect();
             let l_converted = LdtkLayerInstance {
                 grid_height: l.c_hei,
                 grid_width: l.c_wid,
                 grid_size: l.grid_size,
                 layerdef_id: l.identifier.clone(),
                 tileset_id: l.tileset_rel_path.clone().unwrap(),
-                grid_tiles: Vec::new(), // TODO: Replace with an actual value
+                grid_tiles: tiles,
             };
             layer_insts.push(l_converted);
         }
@@ -97,4 +102,17 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     };
 
     Ok(resources)
+}
+
+mod convert {
+    use crate::parser::TileInstance;
+    use crate::types::LdtkTileInstance;
+    pub fn convert_tile_instance(source: &TileInstance) -> LdtkTileInstance {
+        LdtkTileInstance {
+            alpha: source.a,
+            px_coords: [source.px[0], source.px[1]],
+            src_coords: [source.src[0], source.src[1]],
+            tile_id: source.t,
+        }
+    }
 }
