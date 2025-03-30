@@ -5,7 +5,7 @@ use std::{
     path::PathBuf,
 };
 
-use convert::convert_layer_def;
+use convert::{convert_layer_def, convert_level};
 use macroquad::texture::Texture2D;
 
 use crate::{
@@ -24,7 +24,7 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     let json: LdtkJson = serde_json::from_reader(reader)?;
 
     let mut path_base = PathBuf::from(path);
-    path_base.pop();
+    path_base.pop(); // Remove the filename so just the folder containing the project remains
 
     // Load tilesets
     let mut tilesets: HashMap<String, LdtkTileset> = HashMap::new();
@@ -56,32 +56,13 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
         layer_defs.insert(json_l.identifier.clone(), layerdef);
     }
 
+    // Load levels
     let mut levels: Vec<LdtkLevel> = Vec::new();
     for level in &json.levels {
-        let mut layer_insts: Vec<LdtkLayerInstance> = Vec::new();
-
-        for l in level.layer_instances.as_ref().unwrap() {
-            let tiles: Vec<LdtkTileInstance> = l
-                .grid_tiles
-                .iter()
-                .map(|me| convert::convert_tile_instance(me))
-                .collect();
-            let l_converted = LdtkLayerInstance {
-                grid_height: l.c_hei,
-                grid_width: l.c_wid,
-                grid_size: l.grid_size,
-                layerdef_id: l.identifier.clone(),
-                tileset_id: l.tileset_rel_path.clone().unwrap(),
-                grid_tiles: tiles,
-            };
-            layer_insts.push(l_converted);
-        }
-
-        levels.push(LdtkLevel {
-            layers: layer_insts,
-        });
+        levels.push(convert_level(level));
     }
 
+    // Compile loaded assets into the final structure
     let resources = LdtkResources {
         levels,
         tilesets,
@@ -92,8 +73,10 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
 }
 
 mod convert {
-    use crate::parser::{LayerDefinition, TileInstance};
-    use crate::types::{LdtkLayerDef, LdtkLayerType, LdtkTileInstance};
+    use crate::parser::{LayerDefinition, Level, TileInstance};
+    use crate::types::{
+        LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel, LdtkTileInstance,
+    };
 
     /// Converts a TileInstance into an LdtkTileInstance.
     pub fn convert_tile_instance(input: &TileInstance) -> LdtkTileInstance {
@@ -129,5 +112,31 @@ mod convert {
         };
 
         Ok(layerdef)
+    }
+
+    /// Converts a Level into an LdtkLevel.
+    pub fn convert_level(input: &Level) -> LdtkLevel {
+        let mut layer_insts: Vec<LdtkLayerInstance> = Vec::new();
+
+        for l in input.layer_instances.as_ref().unwrap() {
+            let tiles: Vec<LdtkTileInstance> = l
+                .grid_tiles
+                .iter()
+                .map(|me| convert_tile_instance(me))
+                .collect();
+            let l_converted = LdtkLayerInstance {
+                grid_height: l.c_hei,
+                grid_width: l.c_wid,
+                grid_size: l.grid_size,
+                layerdef_id: l.identifier.clone(),
+                tileset_id: l.tileset_rel_path.clone().unwrap(),
+                grid_tiles: tiles,
+            };
+            layer_insts.push(l_converted);
+        }
+
+        LdtkLevel {
+            layers: layer_insts,
+        }
     }
 }
