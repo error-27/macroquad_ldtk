@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 
 use crate::types::{LdtkLayerInstance, LdtkResources, LdtkTileset};
 
+/// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
 pub fn draw_level(level_idx: usize, res: &LdtkResources, textures: &[(Texture2D, &str)]) {
     let lvl = &res.levels[level_idx];
 
