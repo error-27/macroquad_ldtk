@@ -5,11 +5,12 @@ use std::{
     path::PathBuf,
 };
 
+use convert::convert_layer_def;
 use macroquad::texture::Texture2D;
 
 use crate::{
     parser::*,
-    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel, LdtkTileInstance},
+    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLevel, LdtkTileInstance},
 };
 
 use super::types::{LdtkResources, LdtkTileset};
@@ -48,25 +49,11 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     }
 
     // Load layer definitions
-    let mut layerdefs: HashMap<String, LdtkLayerDef> = HashMap::new();
+    let mut layer_defs: HashMap<String, LdtkLayerDef> = HashMap::new();
     for json_l in &json.defs.layers {
-        let layer_type = match json_l.layer_definition_type.as_str() {
-            "IntGrid" => LdtkLayerType::IntGrid,
-            "Tiles" => LdtkLayerType::Tiles,
-            "AutoLayer" => LdtkLayerType::AutoLayer,
-            "Entities" => LdtkLayerType::Entities,
-            _ => panic!("Invalid LDtk file loaded!"),
-        };
+        let layerdef = convert_layer_def(json_l).expect("failed to convert layerdef"); // TODO: pass error up the stack
 
-        let layerdef = LdtkLayerDef {
-            layer_type: layer_type,
-            identifier: json_l.identifier.clone(),
-            opacity: json_l.display_opacity,
-            grid_size: json_l.grid_size,
-            uid: json_l.uid,
-        };
-
-        layerdefs.insert(json_l.identifier.clone(), layerdef);
+        layer_defs.insert(json_l.identifier.clone(), layerdef);
     }
 
     let mut levels: Vec<LdtkLevel> = Vec::new();
@@ -96,23 +83,51 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     }
 
     let resources = LdtkResources {
-        levels: levels,
-        tilesets: tilesets,
-        layer_defs: layerdefs,
+        levels,
+        tilesets,
+        layer_defs,
     };
 
     Ok(resources)
 }
 
 mod convert {
-    use crate::parser::TileInstance;
-    use crate::types::LdtkTileInstance;
-    pub fn convert_tile_instance(source: &TileInstance) -> LdtkTileInstance {
+    use crate::parser::{LayerDefinition, TileInstance};
+    use crate::types::{LdtkLayerDef, LdtkLayerType, LdtkTileInstance};
+
+    /// Converts a TileInstance into an LdtkTileInstance.
+    pub fn convert_tile_instance(input: &TileInstance) -> LdtkTileInstance {
         LdtkTileInstance {
-            alpha: source.a,
-            px_coords: [source.px[0], source.px[1]],
-            src_coords: [source.src[0], source.src[1]],
-            tile_id: source.t,
+            alpha: input.a,
+            px_coords: [input.px[0], input.px[1]],
+            src_coords: [input.src[0], input.src[1]],
+            tile_id: input.t,
         }
+    }
+
+    /// Converts a String into the correct LdtkLayerType.
+    pub fn convert_layer_type(input: &String) -> Result<LdtkLayerType, String> {
+        match input.as_str() {
+            "IntGrid" => Ok(LdtkLayerType::IntGrid),
+            "Tiles" => Ok(LdtkLayerType::Tiles),
+            "AutoLayer" => Ok(LdtkLayerType::AutoLayer),
+            "Entities" => Ok(LdtkLayerType::Entities),
+            _ => Err("invalid layer type".to_owned()),
+        }
+    }
+
+    /// Converts LayerDefinition to an LdtkLayerDef.
+    pub fn convert_layer_def(input: &LayerDefinition) -> Result<LdtkLayerDef, String> {
+        let layer_type = convert_layer_type(&input.layer_definition_type)?;
+
+        let layerdef = LdtkLayerDef {
+            layer_type,
+            identifier: input.identifier.clone(),
+            opacity: input.display_opacity,
+            grid_size: input.grid_size,
+            uid: input.uid,
+        };
+
+        Ok(layerdef)
     }
 }
