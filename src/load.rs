@@ -72,6 +72,7 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     Ok(resources)
 }
 
+/// Internal type conversions mod
 mod convert {
     use crate::parser::{LayerDefinition, Level, TileInstance};
     use crate::types::{
