@@ -15,7 +15,7 @@ async fn main() {
     loop {
         clear_background(BLACK);
 
-        draw_level(0, &ldtk_resources, &tilesets, Vec2::new(0.0, 0.0));
+        draw_level(0, &ldtk_resources, &tilesets, Vec2::new(0.0, 0.0), None);
 
         next_frame().await
     }
