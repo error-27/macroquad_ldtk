@@ -5,11 +5,16 @@ use macroquad::prelude::*;
 use crate::types::{LdtkLayerInstance, LdtkResources, LdtkTileset};
 
 /// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
-pub fn draw_level(level_idx: usize, res: &LdtkResources, textures: &[(Texture2D, &str)]) {
+pub fn draw_level(
+    level_idx: usize,
+    res: &LdtkResources,
+    textures: &[(Texture2D, &str)],
+    position: Vec2,
+) {
     let lvl = &res.levels[level_idx];
 
     for layer in &lvl.layers {
-        draw_layer(layer, &res.tilesets, &textures);
+        draw_layer(layer, &res.tilesets, &textures, position);
     }
 }
 
@@ -17,6 +22,7 @@ fn draw_layer(
     layer: &LdtkLayerInstance,
     tilesets: &HashMap<String, LdtkTileset>,
     textures: &[(Texture2D, &str)],
+    position: Vec2,
 ) {
     let tileset = tilesets.get(&layer.tileset_id).unwrap();
     let tex = &textures[tileset.texture_index as usize].0;
@@ -24,8 +30,8 @@ fn draw_layer(
     for t in &layer.grid_tiles {
         draw_texture_ex(
             tex,
-            t.px_coords[0] as f32,
-            t.px_coords[1] as f32,
+            t.px_coords[0] as f32 + position.x,
+            t.px_coords[1] as f32 + position.y,
             WHITE,
             DrawTextureParams {
                 source: Some(Rect {
