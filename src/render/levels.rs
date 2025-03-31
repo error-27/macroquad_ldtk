@@ -1,10 +1,11 @@
-use std::collections::HashMap;
+//! Module to handle interactions with the levels
 
 use macroquad::prelude::*;
 
-use crate::types::{LdtkLayerInstance, LdtkResources, LdtkTileset};
+use crate::types::LdtkResources;
 
 /// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
+/// The `source` rect is in grid coordinates, while the `position` vector is in pixel coordinates.
 pub fn draw_level(
     level_idx: usize,
     res: &LdtkResources,
