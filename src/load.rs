@@ -6,7 +6,7 @@ use macroquad::texture::Texture2D;
 use crate::{
     error::Error,
     parser::*,
-    types::{LdtkLayerDef, LdtkLayerInstance, LdtkLevel, LdtkTileInstance},
+    types::{LdtkLayerDef, LdtkLevel},
 };
 
 use super::types::{LdtkResources, LdtkTileset};
