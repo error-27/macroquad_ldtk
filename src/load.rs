@@ -1,14 +1,10 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::{self, BufReader},
-    path::PathBuf,
-};
+use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
 
 use convert::{convert_layer_def, convert_level};
 use macroquad::texture::Texture2D;
 
 use crate::{
+    error::Error,
     parser::*,
     types::{LdtkLayerDef, LdtkLayerInstance, LdtkLevel, LdtkTileInstance},
 };
@@ -17,7 +13,10 @@ use super::types::{LdtkResources, LdtkTileset};
 
 /// Loads an LDtk project from a JSON file.
 /// Returns a struct containing the LDtk project resources.
-pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Result<LdtkResources> {
+pub async fn load_project(
+    path: &str,
+    textures: &[(Texture2D, &str)],
+) -> Result<LdtkResources, Error> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
 
@@ -51,7 +50,7 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
     // Load layer definitions
     let mut layer_defs: HashMap<String, LdtkLayerDef> = HashMap::new();
     for json_l in &json.defs.layers {
-        let layerdef = convert_layer_def(json_l).expect("failed to convert layerdef"); // TODO: pass error up the stack
+        let layerdef = convert_layer_def(json_l)?;
 
         layer_defs.insert(json_l.identifier.clone(), layerdef);
     }
@@ -74,6 +73,7 @@ pub async fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> io::Res
 
 /// Internal type conversions mod
 mod convert {
+    use crate::error::Error;
     use crate::parser::{LayerDefinition, Level, TileInstance};
     use crate::types::{
         LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel, LdtkTileInstance,
@@ -90,18 +90,20 @@ mod convert {
     }
 
     /// Converts a String into the correct LdtkLayerType.
-    pub fn convert_layer_type(input: &String) -> Result<LdtkLayerType, String> {
+    pub fn convert_layer_type(input: &String) -> Result<LdtkLayerType, Error> {
         match input.as_str() {
             "IntGrid" => Ok(LdtkLayerType::IntGrid),
             "Tiles" => Ok(LdtkLayerType::Tiles),
             "AutoLayer" => Ok(LdtkLayerType::AutoLayer),
             "Entities" => Ok(LdtkLayerType::Entities),
-            _ => Err("invalid layer type".to_owned()),
+            _ => Err(Error::LayerTypeNotFound {
+                layer_type: input.clone(),
+            }),
         }
     }
 
     /// Converts LayerDefinition to an LdtkLayerDef.
-    pub fn convert_layer_def(input: &LayerDefinition) -> Result<LdtkLayerDef, String> {
+    pub fn convert_layer_def(input: &LayerDefinition) -> Result<LdtkLayerDef, Error> {
         let layer_type = convert_layer_type(&input.layer_definition_type)?;
 
         let layerdef = LdtkLayerDef {
