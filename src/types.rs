@@ -35,7 +35,7 @@ pub struct LdtkLayerInstance {
     /// Path of tileset, used to index into a hashmap
     pub tileset_id: String,
 
-    pub grid_tiles: Vec<LdtkTileInstance>,
+    pub tiles: Vec<LdtkTileInstance>,
 }
 
 pub struct LdtkEntityDef {

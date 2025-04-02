@@ -20,7 +20,7 @@ pub fn draw_level(
         let tileset = tilesets.get(&layer.tileset_id).unwrap();
         let tex = &textures[tileset.texture_index as usize].0;
 
-        for t in &layer.grid_tiles {
+        for t in &layer.tiles {
             if let Some(s) = source {
                 let grid_x = t.px_coords[0] as f32 / tileset.tile_grid_size as f32;
                 let grid_y = t.px_coords[1] as f32 / tileset.tile_grid_size as f32;

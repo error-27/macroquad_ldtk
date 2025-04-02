@@ -122,8 +122,12 @@ mod convert {
         let mut layer_insts: Vec<LdtkLayerInstance> = Vec::new();
 
         for l in input.layer_instances.as_ref().unwrap() {
-            let tiles: Vec<LdtkTileInstance> = l
-                .grid_tiles
+            let source_tiles = if l.grid_tiles.len() > 0 {
+                &l.grid_tiles
+            } else {
+                &l.auto_layer_tiles
+            };
+            let tiles: Vec<LdtkTileInstance> = source_tiles
                 .iter()
                 .map(|me| convert_tile_instance(me))
                 .collect();
@@ -133,7 +137,7 @@ mod convert {
                 grid_size: l.grid_size,
                 layerdef_id: l.identifier.clone(),
                 tileset_id: l.tileset_rel_path.clone().unwrap(),
-                grid_tiles: tiles,
+                tiles,
             };
             layer_insts.push(l_converted);
         }
