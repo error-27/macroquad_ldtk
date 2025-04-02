@@ -12,10 +12,25 @@ async fn main() {
         .await
         .unwrap();
 
+    let mut current_level = 0;
+    let limit = ldtk_resources.levels.len();
+
     loop {
         clear_background(BLACK);
 
-        draw_level(0, &ldtk_resources, &tilesets, Vec2::new(0.0, 0.0), None);
+        if is_key_pressed(KeyCode::Space) {
+            current_level += 1;
+            if current_level == limit {
+                current_level = 0;
+            }
+        }
+        draw_level(
+            current_level,
+            &ldtk_resources,
+            &tilesets,
+            Vec2::new(0.0, 0.0),
+            None,
+        );
 
         next_frame().await
     }
