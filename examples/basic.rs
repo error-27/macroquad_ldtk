@@ -8,9 +8,7 @@ async fn main() {
 
     let tilesets = [(main_tileset, "kenney_platformer.png")];
 
-    let ldtk_resources = load_project("assets/platformer_example.ldtk", &tilesets)
-        .await
-        .unwrap();
+    let ldtk_resources = load_project("assets/platformer_example.ldtk", &tilesets).unwrap();
 
     let mut current_level = 0;
     let limit = ldtk_resources.levels.len();

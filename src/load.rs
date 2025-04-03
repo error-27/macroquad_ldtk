@@ -13,10 +13,7 @@ use super::types::{LdtkResources, LdtkTileset};
 
 /// Loads an LDtk project from a JSON file.
 /// Returns a struct containing the LDtk project resources.
-pub async fn load_project(
-    path: &str,
-    textures: &[(Texture2D, &str)],
-) -> Result<LdtkResources, Error> {
+pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkResources, Error> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
 
