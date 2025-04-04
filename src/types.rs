@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use macroquad::color::Color;
 
+/// Struct that holds all necessary resources from an LDtk project.
+/// Does not hold all data from the project, only what is needed for its own methods.
 pub struct LdtkResources {
+    /// Levels are not necessarily in order unless the level type is Horizontal or Vertical.
     pub levels: Vec<LdtkLevel>,
 
     /// Map of all tilesets
@@ -11,6 +14,7 @@ pub struct LdtkResources {
     pub layer_defs: HashMap<String, LdtkLayerDef>,
 }
 
+/// Contains all data for a specific level
 pub struct LdtkLevel {
     pub layers: Vec<LdtkLayerInstance>,
 }
@@ -24,6 +28,7 @@ pub struct LdtkLayerDef {
     pub uid: i64,
 }
 
+/// Instances of a layer that hold actual terrain data
 pub struct LdtkLayerInstance {
     pub grid_height: i64,
     pub grid_width: i64,
@@ -35,6 +40,7 @@ pub struct LdtkLayerInstance {
     /// Path of tileset, used to index into a hashmap
     pub tileset_id: String,
 
+    /// `Vec` of all tiles, sorted in render order, not in position.
     pub tiles: Vec<LdtkTileInstance>,
 }
 
