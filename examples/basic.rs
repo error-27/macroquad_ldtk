@@ -8,10 +8,10 @@ async fn main() {
 
     let tilesets = [(main_tileset, "kenney_platformer.png")];
 
-    let ldtk_resources = load_project("assets/platformer_example.ldtk", &tilesets).unwrap();
+    let res = load_project("assets/platformer_example.ldtk", &tilesets).unwrap();
 
     let mut current_level = 0;
-    let limit = ldtk_resources.levels.len();
+    let limit = res.levels.len();
 
     loop {
         clear_background(BLACK);
@@ -22,13 +22,7 @@ async fn main() {
                 current_level = 0;
             }
         }
-        draw_level(
-            current_level,
-            &ldtk_resources,
-            &tilesets,
-            Vec2::new(0.0, 0.0),
-            None,
-        );
+        res.draw_level(current_level, &tilesets, Vec2::new(0.0, 0.0), None);
 
         next_frame().await
     }
