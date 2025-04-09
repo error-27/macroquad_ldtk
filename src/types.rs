@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use macroquad::color::Color;
 
+use crate::parser::TilesetRectangle;
+
 /// Struct that holds all necessary resources from an LDtk project.
 /// Does not hold all data from the project, only what is needed for its own methods.
 pub struct LdtkResources {
@@ -42,6 +44,9 @@ pub struct LdtkLayerInstance {
 
     /// `Vec` of all tiles, sorted in render order, not in position.
     pub tiles: Vec<LdtkTileInstance>,
+
+    /// `Vec` of all entities.
+    pub entities: Vec<LdtkEntityInstance>,
 }
 
 pub struct LdtkEntityDef {
@@ -55,6 +60,34 @@ pub struct LdtkEntityDef {
 
     /// User-defined identifier
     pub identifier: String,
+}
+
+pub struct LdtkEntityInstance {
+    /// Grid-based coordinates.
+    pub grid_coords: [i64; 2],
+
+    /// Pivot coordinates of the entity.
+    pub pivot: [f64; 2],
+
+    /// List of tags from the entity definition.
+    pub tags: Vec<String>,
+
+    /// Optional tile used to display the entity.
+    pub tile_rect: Option<LdtkTileRect>,
+
+    /// Current level coordinates in pixels.
+    pub px_coords: [i64; 2],
+
+    /// World coordinates in pixels. Only usable in Gridvania and Free world layouts.
+    pub world_coords: Option<[i64; 2]>,
+
+    /// Entity definition identifier.
+    pub identifier: String,
+    /// Unique instance identifier.
+    pub iid: String,
+
+    pub height: i64,
+    pub width: i64,
 }
 
 pub struct LdtkTileset {

@@ -71,9 +71,10 @@ pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkRe
 /// Internal type conversions mod
 mod convert {
     use crate::error::Error;
-    use crate::parser::{LayerDefinition, Level, TileInstance};
+    use crate::parser::{EntityInstance, LayerDefinition, Level, TileInstance};
     use crate::types::{
-        LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel, LdtkTileInstance,
+        LdtkEntityInstance, LdtkLayerDef, LdtkLayerInstance, LdtkLayerType, LdtkLevel,
+        LdtkTileInstance,
     };
 
     /// Converts a TileInstance into an LdtkTileInstance.
@@ -96,6 +97,32 @@ mod convert {
             _ => Err(Error::LayerTypeNotFound {
                 layer_type: input.clone(),
             }),
+        }
+    }
+
+    /// Converts an EntityInstance into an LdtkEntityInstance.
+    pub fn convert_entity_instance(input: &EntityInstance) -> LdtkEntityInstance {
+        let world_coords = if let Some(wx) = input.world_x {
+            if let Some(wy) = input.world_y {
+                Some([wx, wy])
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        LdtkEntityInstance {
+            grid_coords: [input.grid[0], input.grid[1]],
+            pivot: [input.pivot[0], input.pivot[1]],
+            tags: input.tags.clone(),
+            tile_rect: None, // May put an actual value here, but chances are I remove this since this is just added cruft.
+            px_coords: [input.px[0], input.px[1]],
+            world_coords,
+            identifier: input.identifier.clone(),
+            iid: input.iid.clone(),
+            height: input.height,
+            width: input.width,
         }
     }
 
@@ -128,12 +155,20 @@ mod convert {
                 .iter()
                 .map(|me| convert_tile_instance(me))
                 .collect();
+
+            let entities: Vec<LdtkEntityInstance> = l
+                .entity_instances
+                .iter()
+                .map(|me| convert_entity_instance(me))
+                .collect();
+
             let l_converted = LdtkLayerInstance {
                 grid_height: l.c_hei,
                 grid_width: l.c_wid,
                 grid_size: l.grid_size,
                 layerdef_id: l.identifier.clone(),
                 tileset_id: l.tileset_rel_path.clone().unwrap(),
+                entities,
                 tiles,
             };
             layer_insts.push(l_converted);
