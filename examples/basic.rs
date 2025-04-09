@@ -13,6 +13,15 @@ async fn main() {
     let mut current_level = 0;
     let limit = res.levels.len();
 
+    // Load all coins into the level
+    let coins: Vec<Coin> = res
+        .get_entities(current_level)
+        .iter()
+        .map(|me| Coin {
+            position: me.px_coords,
+        })
+        .collect();
+
     loop {
         clear_background(BLACK);
 
@@ -24,6 +33,28 @@ async fn main() {
         }
         res.draw_level(current_level, &tilesets, Vec2::new(0.0, 0.0), None);
 
+        for c in &coins {
+            draw_texture_ex(
+                &tilesets[0].0,
+                c.position[0] as f32,
+                c.position[1] as f32,
+                WHITE,
+                DrawTextureParams {
+                    source: Some(Rect {
+                        x: 11.0 * 18.0,
+                        y: 7.0 * 18.0,
+                        w: 18.0,
+                        h: 18.0,
+                    }),
+                    ..Default::default()
+                },
+            );
+        }
+
         next_frame().await
     }
+}
+
+struct Coin {
+    position: [i64; 2],
 }

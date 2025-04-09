@@ -2,8 +2,6 @@ use std::collections::HashMap;
 
 use macroquad::color::Color;
 
-use crate::parser::TilesetRectangle;
-
 /// Struct that holds all necessary resources from an LDtk project.
 /// Does not hold all data from the project, only what is needed for its own methods.
 pub struct LdtkResources {
@@ -40,7 +38,7 @@ pub struct LdtkLayerInstance {
     pub layerdef_id: String,
 
     /// Path of tileset, used to index into a hashmap
-    pub tileset_id: String,
+    pub tileset_id: Option<String>,
 
     /// `Vec` of all tiles, sorted in render order, not in position.
     pub tiles: Vec<LdtkTileInstance>,
@@ -124,6 +122,7 @@ pub struct LdtkTileRect {
     pub tileset_uid: i64,
 }
 
+#[derive(Eq, PartialEq, Debug)]
 pub enum LdtkLayerType {
     IntGrid,
     Entities,

@@ -7,6 +7,5 @@ mod parser;
 
 pub mod prelude {
     pub use crate::error::Error;
-    pub use crate::levels::*;
     pub use crate::load::*;
 }

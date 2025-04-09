@@ -167,7 +167,7 @@ mod convert {
                 grid_width: l.c_wid,
                 grid_size: l.grid_size,
                 layerdef_id: l.identifier.clone(),
-                tileset_id: l.tileset_rel_path.clone().unwrap(),
+                tileset_id: l.tileset_rel_path.clone(),
                 entities,
                 tiles,
             };

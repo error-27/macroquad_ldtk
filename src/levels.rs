@@ -2,7 +2,7 @@
 
 use macroquad::prelude::*;
 
-use crate::types::LdtkResources;
+use crate::types::{LdtkEntityInstance, LdtkLayerType, LdtkResources};
 
 impl LdtkResources {
     /// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
@@ -18,7 +18,18 @@ impl LdtkResources {
         let tilesets = &self.tilesets;
 
         for layer in &lvl.layers {
-            let tileset = tilesets.get(&layer.tileset_id).unwrap();
+            let layerdef = &self.layer_defs.get(&layer.layerdef_id).unwrap();
+
+            if layerdef.layer_type == LdtkLayerType::Entities {
+                continue; // Skip non displayable layers
+            }
+
+            if layer.tileset_id.is_none() {
+                continue; // This layer has nothing to render
+            }
+            let tileset_id = layer.tileset_id.as_ref().unwrap();
+
+            let tileset = tilesets.get(tileset_id).unwrap();
             let tex = &textures[tileset.texture_index as usize].0;
 
             for t in &layer.tiles {
@@ -48,5 +59,19 @@ impl LdtkResources {
                 );
             }
         }
+    }
+
+    /// Gets all entities in a specified level. Useful for spawning entities on load.
+    pub fn get_entities(&self, level_idx: usize) -> Vec<&LdtkEntityInstance> {
+        let mut entities = Vec::new();
+
+        let level = &self.levels[level_idx];
+        for l in &level.layers {
+            for e in &l.entities {
+                entities.push(e);
+            }
+        }
+
+        entities
     }
 }
