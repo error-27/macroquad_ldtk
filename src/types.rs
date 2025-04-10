@@ -1,6 +1,8 @@
-use std::collections::HashMap;
+//! This module holds the types that represent a loaded LDtk Project.
+//! These types do not hold all of the loaded data, only what is useful in a game.
+//! Editor data is stripped out during the loading process.
 
-use macroquad::color::Color;
+use std::collections::HashMap;
 
 /// Struct that holds all necessary resources from an LDtk project.
 /// Does not hold all data from the project, only what is needed for its own methods.
@@ -19,6 +21,7 @@ pub struct LdtkLevel {
     pub layers: Vec<LdtkLayerInstance>,
 }
 
+/// Extra layer data, such as opacity
 pub struct LdtkLayerDef {
     pub layer_type: LdtkLayerType,
     pub identifier: String,
@@ -47,19 +50,8 @@ pub struct LdtkLayerInstance {
     pub entities: Vec<LdtkEntityInstance>,
 }
 
-pub struct LdtkEntityDef {
-    pub allow_out_of_bounds: bool,
-    pub color: Color,
-    pub height: i64,
-    pub width: i64,
-
-    /// Unique identifier
-    pub uid: i64,
-
-    /// User-defined identifier
-    pub identifier: String,
-}
-
+/// Entity instance as placed in LDtk.
+/// Should be treated as a spawnpoint, not the actual entity.
 pub struct LdtkEntityInstance {
     /// Grid-based coordinates.
     pub grid_coords: [i64; 2],
@@ -85,6 +77,7 @@ pub struct LdtkEntityInstance {
     pub width: i64,
 }
 
+/// Holds the data for a tileset.
 pub struct LdtkTileset {
     /// Index of the texture in the passed-in array
     pub texture_index: u32,
@@ -100,29 +93,27 @@ pub struct LdtkTileset {
     pub uid: i64,
 }
 
+/// Holds the data of an individual tile.
 pub struct LdtkTileInstance {
     pub alpha: f64,
 
+    /// Coordinates in the level, in pixels.
     pub px_coords: [i64; 2],
-
+    /// Coordinates in the source image.
     pub src_coords: [i64; 2],
 
     pub tile_id: i64,
 }
 
-pub struct LdtkTileRect {
-    pub x: i64,
-    pub y: i64,
-    pub width: i64,
-    pub height: i64,
-
-    pub tileset_uid: i64,
-}
-
+/// Layer types selectable in the LDtk editor
 #[derive(Eq, PartialEq, Debug)]
 pub enum LdtkLayerType {
+    /// Grid of integer values
     IntGrid,
+    /// Layer of entities. Does not display through `LdtkResources::draw_level`.
     Entities,
+    /// Layer of manually placed tiles.
     Tiles,
+    /// Layer of automatically placed tiles.
     AutoLayer,
 }
