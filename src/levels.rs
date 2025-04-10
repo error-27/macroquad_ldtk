@@ -9,12 +9,15 @@ impl LdtkResources {
     /// The `source` rect is in grid coordinates, while the `position` vector is in pixel coordinates.
     pub fn draw_level(
         &self,
-        level_idx: usize,
+        level_coord: (i64, i64),
         textures: &[(Texture2D, &str)],
         position: Vec2,
         source: Option<Rect>,
     ) {
-        let lvl = &self.levels[level_idx];
+        let lvl = &self
+            .levels
+            .get(&level_coord)
+            .expect(format!("No level at coordinate {:?}", level_coord).as_str()); // I feel a panic is good enough here.
         let tilesets = &self.tilesets;
 
         for layer in &lvl.layers {
@@ -62,10 +65,13 @@ impl LdtkResources {
     }
 
     /// Gets all entities in a specified level. Useful for spawning entities on load.
-    pub fn get_entities(&self, level_idx: usize) -> Vec<&LdtkEntityInstance> {
+    pub fn get_entities(&self, level_coord: (i64, i64)) -> Vec<&LdtkEntityInstance> {
         let mut entities = Vec::new();
 
-        let level = &self.levels[level_idx];
+        let level = &self
+            .levels
+            .get(&level_coord)
+            .expect(format!("No level at coordinate {:?}", level_coord).as_str());
         for l in &level.layers {
             for e in &l.entities {
                 entities.push(e);

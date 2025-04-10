@@ -10,12 +10,11 @@ async fn main() {
 
     let res = load_project("assets/platformer_example.ldtk", &tilesets).unwrap();
 
-    let mut current_level = 0;
-    let limit = res.levels.len();
+    let current_level = 0;
 
     // Load all coins into the level
     let coins: Vec<Coin> = res
-        .get_entities(current_level)
+        .get_entities((current_level, 0))
         .iter()
         .map(|me| Coin {
             position: me.px_coords,
@@ -24,14 +23,7 @@ async fn main() {
 
     loop {
         clear_background(BLACK);
-
-        if is_key_pressed(KeyCode::Space) {
-            current_level += 1;
-            if current_level == limit {
-                current_level = 0;
-            }
-        }
-        res.draw_level(current_level, &tilesets, Vec2::new(0.0, 0.0), None);
+        res.draw_level((current_level, 0), &tilesets, Vec2::new(0.0, 0.0), None);
 
         for c in &coins {
             draw_texture_ex(

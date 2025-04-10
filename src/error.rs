@@ -5,6 +5,7 @@ pub enum Error {
     Io(std::io::Error),
     SerdeJson(serde_json::error::Category),
     LayerTypeNotFound { layer_type: String },
+    NullWorldType,
 }
 
 impl std::error::Error for Error {}
@@ -16,7 +17,8 @@ impl Display for Error {
             Self::SerdeJson(category) => write!(f, "Json Deserialization Error: {:?}", category), // May be better ways of doing this???
             Self::LayerTypeNotFound { layer_type } => write!(
                 f, "Invalid layer type: {}. This should not happen unless the leveldata was modified outside LDtk.", layer_type
-            )
+            ),
+            Self::NullWorldType => write!(f, "Null world types are unsupported in this version of the library.")
         }
     }
 }

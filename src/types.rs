@@ -7,8 +7,8 @@ use std::collections::HashMap;
 /// Struct that holds all necessary resources from an LDtk project.
 /// Does not hold all data from the project, only what is needed for its own methods.
 pub struct LdtkResources {
-    /// Levels are not necessarily in order unless the level type is Horizontal or Vertical.
-    pub levels: Vec<LdtkLevel>,
+    /// Levels are in a HashMap of a tuple (x,y), representing the level location. In horizontal levels y is always 0 and in vertical levels x is always 0.
+    pub levels: HashMap<(i64, i64), LdtkLevel>,
 
     /// Map of all tilesets
     pub tilesets: HashMap<String, LdtkTileset>,

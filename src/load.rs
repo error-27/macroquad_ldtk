@@ -51,9 +51,27 @@ pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkRe
     }
 
     // Load levels
-    let mut levels: Vec<LdtkLevel> = Vec::new();
-    for level in &json.levels {
-        levels.push(convert_level(level));
+    let mut levels: HashMap<(i64, i64), LdtkLevel> = HashMap::new();
+    if json.world_layout.is_none() {
+        return Err(Error::NullWorldType);
+    }
+
+    match json.world_layout.unwrap() {
+        WorldLayout::Free | WorldLayout::GridVania => {
+            for level in &json.levels {
+                levels.insert((level.world_x, level.world_y), convert_level(level));
+            }
+        }
+        WorldLayout::LinearHorizontal => {
+            for (i, level) in json.levels.iter().enumerate() {
+                levels.insert((i as i64, 0), convert_level(level));
+            }
+        }
+        WorldLayout::LinearVertical => {
+            for (i, level) in json.levels.iter().enumerate() {
+                levels.insert((0, i as i64), convert_level(level));
+            }
+        }
     }
 
     // Compile loaded assets into the final structure
