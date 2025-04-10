@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+/// Custom error enum that handles the possible errors thrown while loading a project.
 #[derive(Debug)]
 pub enum Error {
     Io(std::io::Error),
