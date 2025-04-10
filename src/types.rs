@@ -70,9 +70,6 @@ pub struct LdtkEntityInstance {
     /// List of tags from the entity definition.
     pub tags: Vec<String>,
 
-    /// Optional tile used to display the entity.
-    pub tile_rect: Option<LdtkTileRect>,
-
     /// Current level coordinates in pixels.
     pub px_coords: [i64; 2],
 

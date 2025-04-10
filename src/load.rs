@@ -116,7 +116,6 @@ mod convert {
             grid_coords: [input.grid[0], input.grid[1]],
             pivot: [input.pivot[0], input.pivot[1]],
             tags: input.tags.clone(),
-            tile_rect: None, // May put an actual value here, but chances are I remove this since this is just added cruft.
             px_coords: [input.px[0], input.px[1]],
             world_coords,
             identifier: input.identifier.clone(),
