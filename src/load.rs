@@ -6,10 +6,8 @@ use macroquad::texture::Texture2D;
 use crate::{
     error::Error,
     parser::*,
-    types::{LdtkLayerDef, LdtkLevel},
+    types::{LdtkLayerDef, LdtkLevel, LdtkResources, LdtkTileset},
 };
-
-use super::types::{LdtkResources, LdtkTileset};
 
 /// Loads an LDtk project from a JSON file.
 /// Returns a struct containing the LDtk project resources.
