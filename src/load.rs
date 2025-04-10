@@ -191,6 +191,8 @@ mod convert {
 
         LdtkLevel {
             layers: layer_insts,
+            width: input.px_wid,
+            height: input.px_hei,
         }
     }
 }

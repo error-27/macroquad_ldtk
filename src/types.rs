@@ -18,6 +18,8 @@ pub struct LdtkResources {
 
 /// Contains all data for a specific level
 pub struct LdtkLevel {
+    pub width: i64,
+    pub height: i64,
     pub layers: Vec<LdtkLayerInstance>,
 }
 
