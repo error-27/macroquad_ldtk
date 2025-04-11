@@ -50,6 +50,9 @@ pub struct LdtkLayerInstance {
 
     /// `Vec` of all entities.
     pub entities: Vec<LdtkEntityInstance>,
+
+    /// IntGrid values for the layer, in CSV format.
+    pub int_grid_values: Vec<i64>,
 }
 
 /// Entity instance as placed in LDtk.

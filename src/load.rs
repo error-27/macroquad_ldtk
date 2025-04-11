@@ -185,6 +185,7 @@ mod convert {
                 tileset_id: l.tileset_rel_path.clone(),
                 entities,
                 tiles,
+                int_grid_values: l.int_grid_csv.clone(),
             };
             layer_insts.push(l_converted);
         }
