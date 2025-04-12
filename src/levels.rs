@@ -7,6 +7,8 @@ use crate::types::{LdtkEntityInstance, LdtkLayerType, LdtkLevel, LdtkResources};
 impl LdtkResources {
     /// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
     /// The `source` rect is in grid coordinates, while the `position` vector is in pixel coordinates.
+    ///
+    /// `textures` *must* be the same array as was passed in when the project was loaded.
     pub fn draw_level(
         &self,
         level_coord: (i64, i64),

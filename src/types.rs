@@ -1,6 +1,4 @@
-//! This module holds the types that represent a loaded LDtk Project.
-//! These types do not hold all of the loaded data, only what is useful in a game.
-//! Editor data is stripped out during the loading process.
+//! Types used to represent LDtk resources
 
 use std::collections::HashMap;
 

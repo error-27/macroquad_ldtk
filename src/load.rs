@@ -1,3 +1,5 @@
+//! Functions to load data from an LDtk project.
+
 use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
 
 use convert::{convert_layer_def, convert_level};
@@ -11,6 +13,8 @@ use crate::{
 
 /// Loads an LDtk project from a JSON file, with unimportant data stripped out.
 /// Returns a struct containing the LDtk project resources.
+///
+/// Accepts an array of tuples that contain your texture and their path (relative to the project file).
 pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkResources, Error> {
     let json = load_project_raw(path)?;
 
