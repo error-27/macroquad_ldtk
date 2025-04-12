@@ -2,7 +2,7 @@
 
 use macroquad::prelude::*;
 
-use crate::types::{LdtkEntityInstance, LdtkLayerType, LdtkResources};
+use crate::types::{LdtkEntityInstance, LdtkLayerType, LdtkLevel, LdtkResources};
 
 impl LdtkResources {
     /// Draws the specified level. The texture array passed in should be the same as when the project was initially loaded.
@@ -79,5 +79,64 @@ impl LdtkResources {
         }
 
         entities
+    }
+}
+
+impl LdtkLevel {
+    /// Generates rectangles that can easily be iterated over to check collision.
+    pub fn generate_collision_rects(&self, layer_idx: usize, target_value: i64) -> Vec<Rect> {
+        let layer = &self.layers[layer_idx];
+        let mut rects = Vec::new();
+
+        for (i, val) in layer.int_grid_values.iter().enumerate() {
+            if val.to_owned() != target_value {
+                continue;
+            }
+            let r = Rect::new(
+                ((i as i64 % layer.grid_width) * layer.grid_size) as f32,
+                ((i as i64 / layer.grid_width) * layer.grid_size) as f32,
+                layer.grid_size as f32,
+                layer.grid_size as f32,
+            );
+
+            rects.push(r);
+        }
+
+        rects
+    }
+}
+
+mod test {
+    use macroquad::math::Rect;
+
+    use crate::types::{LdtkLayerInstance, LdtkLevel};
+
+    #[test]
+    fn rect_generation() {
+        let layer = LdtkLayerInstance {
+            grid_width: 4,
+            grid_height: 3,
+            grid_size: 16,
+            layerdef_id: "No".to_owned(),
+            tileset_id: None,
+            tiles: Vec::new(),
+            entities: Vec::new(),
+            int_grid_values: vec![2, 0, 3, 0, 1, 2, 1, 0, 1, 1, 0, 1],
+        };
+        let level = LdtkLevel {
+            width: 4,
+            height: 3,
+            layers: vec![layer],
+        };
+
+        let expected = vec![
+            Rect::new(0.0 * 16.0, 1.0 * 16.0, 16.0, 16.0),
+            Rect::new(2.0 * 16.0, 1.0 * 16.0, 16.0, 16.0),
+            Rect::new(0.0 * 16.0, 2.0 * 16.0, 16.0, 16.0),
+            Rect::new(1.0 * 16.0, 2.0 * 16.0, 16.0, 16.0),
+            Rect::new(3.0 * 16.0, 2.0 * 16.0, 16.0, 16.0),
+        ];
+
+        assert_eq!(level.generate_collision_rects(0, 1), expected);
     }
 }

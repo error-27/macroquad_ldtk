@@ -4,13 +4,13 @@
 
 pub mod error;
 pub mod load;
+pub mod parser;
 pub mod types;
 
 mod levels;
-mod parser;
 
 pub mod prelude {
     pub use crate::error::Error;
-    pub use crate::load::*;
-    pub use crate::types::LdtkResources;
+    pub use crate::load::load_project;
+    pub use crate::types::*;
 }

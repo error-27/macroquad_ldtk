@@ -9,13 +9,10 @@ use crate::{
     types::{LdtkLayerDef, LdtkLevel, LdtkResources, LdtkTileset},
 };
 
-/// Loads an LDtk project from a JSON file.
+/// Loads an LDtk project from a JSON file, with unimportant data stripped out.
 /// Returns a struct containing the LDtk project resources.
 pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkResources, Error> {
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
-
-    let json: LdtkJson = serde_json::from_reader(reader)?;
+    let json = load_project_raw(path)?;
 
     let mut path_base = PathBuf::from(path);
     path_base.pop(); // Remove the filename so just the folder containing the project remains
@@ -82,6 +79,16 @@ pub fn load_project(path: &str, textures: &[(Texture2D, &str)]) -> Result<LdtkRe
     };
 
     Ok(resources)
+}
+
+/// Loads the project and gives the raw `serde` output.
+pub fn load_project_raw(path: &str) -> Result<LdtkJson, Error> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let json: LdtkJson = serde_json::from_reader(reader)?;
+
+    Ok(json)
 }
 
 /// Internal type conversions mod
