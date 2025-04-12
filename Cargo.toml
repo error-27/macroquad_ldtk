@@ -9,6 +9,7 @@ repository = "https://github.com/error-27/macroquad_ldtk"
 readme = "README.md"
 categories = ["game-development"]
 keywords = ["ldtk", "gamedev", "level", "editor", "macroquad"]
+exclude = ["assets/*"]
 
 [dependencies]
 macroquad = "0.4.13"
