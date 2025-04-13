@@ -1,6 +1,6 @@
 [package]
 name = "macroquad_ldtk"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["error_27 <error27dev@gmail.com>"]
 description = "LDtk integration with macroquad"
